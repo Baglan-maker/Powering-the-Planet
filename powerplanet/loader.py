@@ -8,6 +8,18 @@ DATA_DIR = Path(__file__).resolve().parent.parent / "data"
 CO2_URL = "https://raw.githubusercontent.com/owid/co2-data/master/owid-co2-data.csv"
 ENERGY_URL = "https://raw.githubusercontent.com/owid/energy-data/master/owid-energy-data.csv"
 TIMEOUT_SECONDS = 30
+CO2_FILE = DATA_DIR / "owid-co2-data.csv"
+ENERGY_FILE = DATA_DIR / "owid-energy-data.csv"
+CO2_COLUMNS = [
+    "country",
+    "year",
+    "co2",
+    "gdp",
+    "population",
+    "iso_code",
+    "co2_per_capita",
+]
+
 
 class DataLoadError(Exception):
     """Custom exception for data loading errors."""
@@ -80,3 +92,22 @@ def read_csv(path: Path, required_columns: list[str]) -> pd.DataFrame:
     if missing:
         raise DataLoadError(f"Missing required columns in {path}: {missing}")
     return df
+
+
+def load_co2_data() -> pd.DataFrame:
+    """Load CO2 data from the local file or download it if not present.
+
+    Returns
+    -------
+    pd.DataFrame
+        The CO2 data as a pandas DataFrame.
+
+    Raises
+    ------
+    DataLoadError
+        If the file cannot be downloaded or read, or if required columns are missing.
+    """
+    path = CO2_FILE
+    if not path.exists():
+        download_file(CO2_URL, path)
+    return read_csv(path, CO2_COLUMNS)
