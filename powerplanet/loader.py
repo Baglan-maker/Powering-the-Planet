@@ -2,6 +2,7 @@
 from pathlib import Path
 
 import requests
+import pandas as pd
 
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
 CO2_URL = "https://raw.githubusercontent.com/owid/co2-data/master/owid-co2-data.csv"
@@ -10,7 +11,6 @@ TIMEOUT_SECONDS = 30
 
 class DataLoadError(Exception):
     """Custom exception for data loading errors."""
-
 
 
 
@@ -48,3 +48,35 @@ def download_file(url: str, destination: Path) -> Path:
     destination.parent.mkdir(parents=True, exist_ok=True)
     destination.write_bytes(response.content)
     return destination
+
+
+def read_csv(path: Path, required_columns: list[str]) -> pd.DataFrame:
+    """Read a CSV file into a pandas DataFrame and check for required columns.
+    
+    Parameters
+    ----------
+    path : pathlib.Path
+        Path to the CSV file.
+    required_columns : list of str
+        List of columns that must be present in the DataFrame.     
+    
+    Returns
+    -------
+    pd.DataFrame
+        The loaded DataFrame.
+
+    Raises
+    ------
+    DataLoadError
+        If the file is not found, cannot be read, or is missing required columns.
+    """
+    try: 
+        df = pd.read_csv(path)
+    except FileNotFoundError as e:
+        raise DataLoadError(f"File not found: {path}") from e
+    except (pd.errors.EmptyDataError, pd.errors.ParserError) as e:
+        raise DataLoadError(f"Error reading CSV file: {path}") from e
+    missing = set(required_columns) - set(df.columns)
+    if missing:
+        raise DataLoadError(f"Missing required columns in {path}: {missing}")
+    return df
