@@ -19,6 +19,24 @@ CO2_COLUMNS = [
     "iso_code",
     "co2_per_capita",
 ]
+ENERGY_SOURCES = [
+    "coal",
+    "oil",
+    "gas",
+    "nuclear",
+    "hydro",
+    "solar",
+    "wind",
+    "biofuel",
+    "other_renewable",
+]
+ENERGY_COLUMNS = [
+    "country",
+    "year",
+    "iso_code",
+    "primary_energy_consumption",
+    *[f"{source}_consumption" for source in ENERGY_SOURCES],
+]
 
 
 class DataLoadError(Exception):
@@ -111,3 +129,22 @@ def load_co2_data() -> pd.DataFrame:
     if not path.exists():
         download_file(CO2_URL, path)
     return read_csv(path, CO2_COLUMNS)
+
+
+def load_energy_data() -> pd.DataFrame:
+    """Load energy data from the local file or download it if not present.
+
+    Returns
+    -------
+    pd.DataFrame
+        The energy data as a pandas DataFrame.
+
+    Raises
+    ------
+    DataLoadError
+        If the file cannot be downloaded or read, or if required columns are missing.
+    """
+    path = ENERGY_FILE
+    if not path.exists():
+        download_file(ENERGY_URL, path)
+    return read_csv(path, ENERGY_COLUMNS)
