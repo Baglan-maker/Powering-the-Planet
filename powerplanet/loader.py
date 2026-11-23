@@ -112,6 +112,33 @@ def read_csv(path: Path, required_columns: list[str]) -> pd.DataFrame:
     return df
 
 
+def load_dataset(url: str, path: Path, required_columns: list[str]) -> pd.DataFrame:
+    """Read a dataset from disk, downloading it first if it is not there yet.
+
+    Parameters
+    ----------
+    url : str
+        Address to download the file from when it is missing.
+    path : pathlib.Path
+        Where the file is stored locally.
+    required_columns : list of str
+        Columns that must be present in the file.
+
+    Returns
+    -------
+    pd.DataFrame
+        The loaded dataset.
+
+    Raises
+    ------
+    DataLoadError
+        If the file cannot be downloaded or read, or if required columns are missing.
+    """
+    if not path.exists():
+        download_file(url, path)
+    return read_csv(path, required_columns)
+
+
 def load_co2_data() -> pd.DataFrame:
     """Load CO2 data from the local file or download it if not present.
 
@@ -125,10 +152,7 @@ def load_co2_data() -> pd.DataFrame:
     DataLoadError
         If the file cannot be downloaded or read, or if required columns are missing.
     """
-    path = CO2_FILE
-    if not path.exists():
-        download_file(CO2_URL, path)
-    return read_csv(path, CO2_COLUMNS)
+    return load_dataset(CO2_URL, CO2_FILE, CO2_COLUMNS)
 
 
 def load_energy_data() -> pd.DataFrame:
@@ -144,7 +168,4 @@ def load_energy_data() -> pd.DataFrame:
     DataLoadError
         If the file cannot be downloaded or read, or if required columns are missing.
     """
-    path = ENERGY_FILE
-    if not path.exists():
-        download_file(ENERGY_URL, path)
-    return read_csv(path, ENERGY_COLUMNS)
+    return load_dataset(ENERGY_URL, ENERGY_FILE, ENERGY_COLUMNS)
