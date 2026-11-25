@@ -49,3 +49,16 @@ def add_energy_shares(df: pd.DataFrame) -> pd.DataFrame:
     for source in ENERGY_SOURCES:
         df[f"{source}_share"] = df[f"{source}_consumption"] / total * 100
     return df
+
+def add_gdp_per_capita(df: pd.DataFrame) -> pd.DataFrame:
+    """Add GDP per capita column to the DataFrame.
+    
+    Parameters:
+        df (pd.DataFrame): The input DataFrame.
+    
+    Returns:
+        pd.DataFrame: The DataFrame with added GDP per capita column.
+    """
+    df = df.copy()
+    df['gdp_per_capita'] = df['gdp'] / df['population']
+    return df
