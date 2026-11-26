@@ -8,6 +8,13 @@ from powerplanet.analysis import predict_co2
 
 SHARE_COLUMNS = [f"{source}_share" for source in ENERGY_SOURCES]
 
+CATEGORY_COLORS = {
+    "Absolute decoupling": "#2ca02c",
+    "Relative decoupling": "#98df8a",
+    "No decoupling": "#d62728",
+    "Shrinking economy": "#7f7f7f",
+}
+
 TEMPLATE = "plotly_white"
 FONT_SIZE = 14
 
@@ -66,3 +73,46 @@ def plot_emissions_vs_gdp(df: pd.DataFrame, regression) -> go.Figure:
     fig.add_scatter(x=gdp, y=predict_co2(regression, gdp), mode="lines", name="Log-Log Fit", line=dict(color="red"))
     return apply_style(fig)
 
+
+def plot_category_counts(result: pd.DataFrame) -> go.Figure:
+    """Bar chart of how many countries fall into each decoupling category.
+
+    Parameters
+    ----------
+    result : pd.DataFrame
+        Output of add_decoupling_category.
+
+    Returns
+    -------
+    go.Figure
+        Styled Plotly figure.
+    """
+
+    counts = result["category"].value_counts().reset_index()
+    counts.columns = ["category", "count"]
+    fig = px.bar(counts, x="category", y="count", color="category", color_discrete_map=CATEGORY_COLORS)
+    return apply_style(fig)
+
+
+def plot_decoupling(result: pd.DataFrame) -> go.Figure:
+    """Scatter plot of GDP change vs CO2 change, colored by decoupling category.
+
+    Parameters
+    ----------
+    result : pd.DataFrame
+        Output of add_decoupling_category, indexed by country.
+
+    Returns
+    -------
+    go.Figure
+        Styled Plotly figure with reference lines for zero CO2 change
+        and equal GDP and CO2 change.
+    """
+
+    data = result.reset_index()
+    fig = px.scatter(data, x="gdp_change", y="co2_change",
+                        color="category", hover_name="country", color_discrete_map=CATEGORY_COLORS)
+    fig.add_hline(y=0, line_dash="dash", line_color="gray")
+    limit = data["gdp_change"].max()
+    fig.add_scatter(x=[0, limit], y=[0, limit], mode="lines", line=dict(color="gray", dash="dot"), name="CO2 = GDP")
+    return apply_style(fig)
