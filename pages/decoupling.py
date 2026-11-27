@@ -9,13 +9,20 @@ from powerplanet.analysis import (
     compute_changes,
 )
 from powerplanet.datasets import get_countries
+from powerplanet.loader import DataLoadError
 from powerplanet.plots import plot_category_counts, plot_decoupling
 
 st.title("Decoupling")
 st.write(f"Change of GDP and CO2 between {DECOUPLING_START} and {DECOUPLING_END}.")
 
+try:
+    countries = get_countries()
+except DataLoadError as error:
+    st.error(f"Could not load data: {error}")
+    st.stop()
+
 result = add_decoupling_category(
-    compute_changes(get_countries(), DECOUPLING_START, DECOUPLING_END)
+    compute_changes(countries, DECOUPLING_START, DECOUPLING_END)
 )
 
 st.plotly_chart(plot_category_counts(result))
