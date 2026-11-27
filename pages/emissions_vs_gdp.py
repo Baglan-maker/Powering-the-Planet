@@ -3,8 +3,7 @@
 import streamlit as st
 
 from powerplanet.analysis import fit_log_log, spearman_correlation
-from powerplanet.cleaning import add_gdp_per_capita, split_countries_aggregates
-from powerplanet.loader import load_co2_data
+from powerplanet.datasets import get_countries
 from powerplanet.plots import plot_emissions_vs_gdp
 
 FIRST_YEAR = 1990
@@ -12,7 +11,7 @@ LAST_YEAR = 2022
 
 st.title("Emissions vs GDP")
 
-countries, _ = split_countries_aggregates(add_gdp_per_capita(load_co2_data()))
+countries = get_countries()
 year = st.slider("Year", FIRST_YEAR, LAST_YEAR, LAST_YEAR)
 data = countries[countries["year"] == year]
 

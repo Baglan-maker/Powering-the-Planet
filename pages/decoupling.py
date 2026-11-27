@@ -8,16 +8,14 @@ from powerplanet.analysis import (
     add_decoupling_category,
     compute_changes,
 )
-from powerplanet.cleaning import split_countries_aggregates
-from powerplanet.loader import load_co2_data
+from powerplanet.datasets import get_countries
 from powerplanet.plots import plot_category_counts, plot_decoupling
 
 st.title("Decoupling")
 st.write(f"Change of GDP and CO2 between {DECOUPLING_START} and {DECOUPLING_END}.")
 
-countries, _ = split_countries_aggregates(load_co2_data())
 result = add_decoupling_category(
-    compute_changes(countries, DECOUPLING_START, DECOUPLING_END)
+    compute_changes(get_countries(), DECOUPLING_START, DECOUPLING_END)
 )
 
 st.plotly_chart(plot_category_counts(result))
