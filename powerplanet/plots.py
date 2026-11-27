@@ -48,6 +48,7 @@ def plot_energy_mix(df: pd.DataFrame, country: str) -> go.Figure:
     """
     data = df[df['country'] == country]
     long = data.melt(id_vars=['year'], value_vars=SHARE_COLUMNS, var_name='source', value_name='share')
+    long["source"] = long["source"].str.removesuffix("_share").str.replace("_", " ").str.capitalize()
     fig = px.area(long, x='year', y='share', color='source', labels={'share': 'Energy Share (%)', 'year': 'Year'})
     return apply_style(fig)
 
@@ -90,7 +91,9 @@ def plot_category_counts(result: pd.DataFrame) -> go.Figure:
 
     counts = result["category"].value_counts().reset_index()
     counts.columns = ["category", "count"]
-    fig = px.bar(counts, x="category", y="count", color="category", color_discrete_map=CATEGORY_COLORS)
+    fig = px.bar(counts, x="category", y="count", color="category", color_discrete_map=CATEGORY_COLORS,
+                 labels={"category": "", "count": "Countries"})
+    fig.update_layout(showlegend=False)
     return apply_style(fig)
 
 
@@ -111,7 +114,8 @@ def plot_decoupling(result: pd.DataFrame) -> go.Figure:
 
     data = result.reset_index()
     fig = px.scatter(data, x="gdp_change", y="co2_change",
-                        color="category", hover_name="country", color_discrete_map=CATEGORY_COLORS)
+                        color="category", hover_name="country", color_discrete_map=CATEGORY_COLORS,
+                        labels={"gdp_change": "GDP change (%)", "co2_change": "CO2 change (%)"})
     fig.add_hline(y=0, line_dash="dash", line_color="gray")
     limit = data["gdp_change"].max()
     fig.add_scatter(x=[0, limit], y=[0, limit], mode="lines", line=dict(color="gray", dash="dot"), name="CO2 = GDP")
