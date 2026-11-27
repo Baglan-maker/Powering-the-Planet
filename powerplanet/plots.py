@@ -15,7 +15,7 @@ CATEGORY_COLORS = {
     "Shrinking economy": "#7f7f7f",
 }
 
-TEMPLATE = "plotly_white"
+TEMPLATE = "plotly_dark"
 FONT_SIZE = 14
 
 def apply_style(fig: go.Figure) -> go.Figure:

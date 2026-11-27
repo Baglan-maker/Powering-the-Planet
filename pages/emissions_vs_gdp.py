@@ -29,4 +29,4 @@ left.metric("Slope (log-log)", f"{regression.slope:.2f}")
 middle.metric("R²", f"{regression.rvalue ** 2:.2f}")
 right.metric("Spearman ρ", f"{correlation.statistic:.2f}")
 
-st.plotly_chart(plot_emissions_vs_gdp(data, regression))
+st.plotly_chart(plot_emissions_vs_gdp(data, regression), theme=None)

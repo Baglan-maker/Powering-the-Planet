@@ -18,4 +18,4 @@ except DataLoadError as error:
 countries, _ = split_countries_aggregates(df)
 options = sorted(countries['country'].unique())
 country = st.selectbox("Select a country", options, index=options.index(DEFAULT_COUNTRY))
-st.plotly_chart(plot_energy_mix(df, country))
+st.plotly_chart(plot_energy_mix(df, country), theme=None)

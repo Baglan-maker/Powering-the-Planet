@@ -25,8 +25,8 @@ result = add_decoupling_category(
     compute_changes(countries, DECOUPLING_START, DECOUPLING_END)
 )
 
-st.plotly_chart(plot_category_counts(result))
-st.plotly_chart(plot_decoupling(result))
+st.plotly_chart(plot_category_counts(result), theme=None)
+st.plotly_chart(plot_decoupling(result), theme=None)
 
 category = st.selectbox("Category", sorted(result["category"].unique()))
 selected = result[result["category"] == category]
